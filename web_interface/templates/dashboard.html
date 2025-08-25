@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛡️ DDoS Detection System - Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: linear-gradient(145deg, #1a1a3e, #252550);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .card-header .icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .stat-item {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            transition: background 0.3s ease;
+        }
+
+        .stat-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+
+        .status-safe { background: #27ae60; }
+        .status-alert { background: #f39c12; }
+        .status-monitoring { background: #e67e22; }
+        .status-under_attack { background: #e74c3c; }
+
+        .threat-level {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .threat-low { background: #27ae60; }
+        .threat-medium { background: #f39c12; }
+        .threat-high { background: #e67e22; }
+        .threat-critical { background: #e74c3c; }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+
+        .blocked-ips-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .ip-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            transition: background 0.3s ease;
+        }
+
+        .ip-item:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .ip-item:last-child {
+            border-bottom: none;
+        }
+
+        .ip-info {
+            flex: 1;
+        }
+
+        .ip-address {
+            font-weight: bold;
+            color: #e74c3c;
+        }
+
+        .ip-details {
+            font-size: 0.8em;
+            opacity: 0.7;
+            margin-top: 3px;
+        }
+
+        .unblock-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: background 0.3s ease;
+        }
+
+        .unblock-btn:hover {
+            background: #c0392b;
+        }
+
+        .attack-history {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .attack-item {
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .attack-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .attack-ip {
+            font-weight: bold;
+            color: #e74c3c;
+        }
+
+        .attack-time {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+
+        .attack-details {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .system-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .metric-item {
+            background: rgba(255,255,255,0.05);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 20px;
+            opacity: 0.7;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Animation de pulsation pour les alertes */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        /* Scrollbar personnalisée */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🛡️ Système de Détection DDoS Avancé</h1>
+        <p>Intelligence Artificielle & Sécurité Réseau en Temps Réel</p>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- Statistiques principales -->
+        <div class="card">
+            <div class="card-header">
+                <span class="icon">📊</span>
+                Statistiques Principales
+            </div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="total-flows">0</div>
+                    <div class="stat-label">Total Flux</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="active-flows">0</div>
+                    <div class="stat-label">Flux Actifs</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="blocked-ips">0</div>
+                    <div class="stat-label">IPs Bloquées</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="alert-count">0</div>
+                    <div class="stat-label">Alertes</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statut système -->
+        <div class="card">
+            <div class="card-header">
+                <span class="icon">🛡️</span>
+                Statut Système
+            </div>
+            <div style="text-align: center;">
+                <div style="margin-bottom: 15px;">
+                    <span class="status-indicator" id="system-status">SAFE</span>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <span class="threat-level" id="threat-level">LOW</span>
+                </div>
+                <div style="font-size: 1.2em;">
+                    Uptime: <span id="uptime">00h 00m</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Métriques système -->
+        <div class="card">
+            <div class="card-header">
+                <span class="icon">⚡</span>
+                Métriques Système
+            </div>
+            <div class="system-metrics">
+                <div class="metric-item">
+                    <div class="metric-value" id="cpu-usage">0%</div>
+                    <div class="metric-label">CPU</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value" id="memory-usage">0%</div>
+                    <div class="metric-label">Mémoire</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value" id="detection-rate">99.2%</div>
+                    <div class="metric-label">Détection</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Graphique réseau -->
+        <div class="card" style="grid-column: span 2;">
+            <div class="card-header">
+                <span class="icon">📈</span>
+                Activité Réseau Temps Réel
+            </div>
+            <div class="chart-container">
+                <canvas id="networkChart"></canvas>
+            </div>
+        </div>
+
+        <!-- IPs bloquées -->
+        <div class="card">
+            <div class="card-header">
+                <span class="icon">🚫</span>
+                IPs Bloquées
+            </div>
+            <div class="blocked-ips-list" id="blocked-ips-list">
+                <div style="text-align: center; padding: 20px; opacity: 0.7;">
+                    Aucune IP bloquée actuellement
+                </div>
+            </div>
+            <div class="control-buttons">
+                <button class="btn btn-danger" onclick="clearBlockedIPs()">
+                    Débloquer Toutes
+                </button>
+            </div>
+        </div>
+
+        <!-- Historique des attaques -->
+        <div class="card">
+            <div class="card-header">
+                <span class="icon">🚨</span>
+                Historique Attaques
+            </div>
+            <div class="attack-history" id="attack-history">
+                <div style="text-align: center; padding: 20px; opacity: 0.7;">
+                    Aucune attaque détectée
+                </div>
+            </div>
+            <div class="control-buttons">
+                <button class="btn btn-danger" onclick="clearHistory()">
+                    Vider l'historique
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>🤖 Système alimenté par Intelligence Artificielle | 🔒 Protection temps réel</p>
+    </div>
+
+    <script>
+        // Variables globales
+        let networkChart;
+        let isUnderAttack = false;
+
+        // Initialisation du graphique
+        function initChart() {
+            const ctx = document.getElementById('networkChart').getContext('2d');
+            networkChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Bande Passante (%)',
+                            data: [],
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'Paquets/sec',
+                            data: [],
+                            borderColor: '#e67e22',
+                            backgroundColor: 'rgba(230, 126, 34, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            yAxisID: 'y1'
+                        },
+                        {
+                            label: 'Score Menace',
+                            data: [],
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'white'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: 'white' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        y: {
+                            ticks: { color: 'white' },
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            beginAtZero: true,
+                            max: 100
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            ticks: { color: 'white' },
+                            grid: { drawOnChartArea: false },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Mise à jour des statistiques
+        function updateStats() {
+            fetch('/api/stats')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('total-flows').textContent = data.total_flows.toLocaleString();
+                    document.getElementById('active-flows').textContent = data.active_flows.toLocaleString();
+                    document.getElementById('blocked-ips').textContent = data.blocked_ips;
+                    document.getElementById('alert-count').textContent = data.alert_count;
+
+                    // Mise à jour du statut système
+                    const statusElement = document.getElementById('system-status');
+                    statusElement.textContent = data.system_status.replace('_', ' ');
+                    statusElement.className = 'status-indicator status-' + data.system_status.toLowerCase();
+
+                    // Mise à jour du niveau de menace
+                    const threatElement = document.getElementById('threat-level');
+                    threatElement.textContent = data.threat_level;
+                    threatElement.className = 'threat-level threat-' + data.threat_level.toLowerCase();
+
+                    // Animation si attaque détectée
+                    if (data.system_status === 'UNDER_ATTACK' && !isUnderAttack) {
+                        isUnderAttack = true;
+                        document.body.style.animation = 'pulse 1s infinite';
+                    } else if (data.system_status !== 'UNDER_ATTACK' && isUnderAttack) {
+                        isUnderAttack = false;
+                        document.body.style.animation = 'none';
+                    }
+                })
+                .catch(error => console.error('Erreur lors de la récupération des stats:', error));
+        }
+
+        // Mise à jour des informations système
+        function updateSystemInfo() {
+            fetch('/api/system_info')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('uptime').textContent = data.uptime_formatted;
+                    document.getElementById('cpu-usage').textContent = Math.round(data.cpu_usage) + '%';
+                    document.getElementById('memory-usage').textContent = Math.round(data.memory_usage) + '%';
+                    document.getElementById('detection-rate').textContent = data.detection_rate.toFixed(1) + '%';
+                })
+                .catch(error => console.error('Erreur système:', error));
+        }
+
+        // Mise à jour du graphique réseau
+        function updateNetworkChart() {
+            fetch('/api/network_metrics')
+                .then(response => response.json())
+                .then(data => {
+                    networkChart.data.labels = data.timestamps;
+                    networkChart.data.datasets[0].data = data.bandwidth_usage;
+                    networkChart.data.datasets[1].data = data.packet_rate.map(x => x / 20); // Normalisation
+                    networkChart.data.datasets[2].data = data.threat_score;
+                    networkChart.update('none');
+                })
+                .catch(error => console.error('Erreur graphique:', error));
+        }
+
+        // Mise à jour des IPs bloquées
+        function updateBlockedIPs() {
+            fetch('/api/blocked_ips')
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('blocked-ips-list');
+                    
+                    if (data.length === 0) {
+                        container.innerHTML = `
+                            <div style="text-align: center; padding: 20px; opacity: 0.7;">
+                                Aucune IP bloquée actuellement
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    container.innerHTML = data.map(ip => `
+                        <div class="ip-item">
+                            <div class="ip-info">
+                                <div class="ip-address">${ip.ip}</div>
+                                <div class="ip-details">
+                                    ${ip.attack_type} - Confiance: ${(ip.confidence * 100).toFixed(1)}% - ${ip.blocked_at}
+                                </div>
+                            </div>
+                            <button class="unblock-btn" onclick="unblockIP('${ip.ip}')">
+                                Débloquer
+                            </button>
+                        </div>
+                    `).join('');
+                })
+                .catch(error => console.error('Erreur IPs bloquées:', error));
+        }
+
+        // Mise à jour de l'historique des attaques
+        function updateAttackHistory() {
+            fetch('/api/attack_history')
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('attack-history');
+                    
+                    if (data.length === 0) {
+                        container.innerHTML = `
+                            <div style="text-align: center; padding: 20px; opacity: 0.7;">
+                                Aucune attaque détectée
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    container.innerHTML = data.reverse().map(attack => `
+                        <div class="attack-item">
+                            <div class="attack-header">
+                                <span class="attack-ip">${attack.ip}</span>
+                                <span class="attack-time">${attack.timestamp}</span>
+                            </div>
+                            <div class="attack-details">
+                                ${attack.type} - Sévérité: ${attack.severity} - Confiance: ${(attack.confidence * 100).toFixed(1)}%
+                            </div>
+                        </div>
+                    `).join('');
+                })
+                .catch(error => console.error('Erreur historique:', error));
+        }
+
+        // Débloquer une IP
+        function unblockIP(ip) {
+            fetch(`/api/unblock/${ip}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        updateBlockedIPs();
+                        updateStats();
+                    }
+                })
+                .catch(error => console.error('Erreur déblocage:', error));
+        }
+
+        // Vider l'historique
+        function clearHistory() {
+            if (confirm('Êtes-vous sûr de vouloir vider l\'historique des attaques ?')) {
+                fetch('/api/clear_history')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            updateAttackHistory();
+                        }
+                    })
+                    .catch(error => console.error('Erreur vider historique:', error));
+            }
+        }
+
+        // Débloquer toutes les IPs
+        function clearBlockedIPs() {
+            if (confirm('Êtes-vous sûr de vouloir débloquer toutes les IPs ?')) {
+                // Cette fonction nécessiterait une route API supplémentaire
+                alert('Fonctionnalité à implémenter via le terminal avec "clear_blocked"');
+            }
+        }
+
+        // Initialisation au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            initChart();
+            
+            // Première mise à jour
+            updateStats();
+            updateSystemInfo();
+            updateNetworkChart();
+            updateBlockedIPs();
+            updateAttackHistory();
+            
+            // Mises à jour périodiques
+            setInterval(updateStats, 2000);           // Toutes les 2 secondes
+            setInterval(updateSystemInfo, 5000);      // Toutes les 5 secondes
+            setInterval(updateNetworkChart, 3000);    // Toutes les 3 secondes
+            setInterval(updateBlockedIPs, 4000);      // Toutes les 4 secondes
+            setInterval(updateAttackHistory, 6000);   // Toutes les 6 secondes
+        });
+    </script>
+</body>
+</html>

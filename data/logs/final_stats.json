@@ -1,0 +1,8 @@
+{
+  "total_flows": 2157,
+  "blocked_ips": 11,
+  "alert_count": 1,
+  "active_flows": 3,
+  "system_status": "SAFE",
+  "threat_level": "LOW"
+}
