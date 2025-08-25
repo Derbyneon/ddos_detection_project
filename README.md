@@ -75,7 +75,7 @@ sudo yum install python3 python3-pip libpcap-devel
 
 ```bash
 # Cloner le repository
-git clone https://github.com/votre-username/ddos-detection-ai.git
+git clone https://github.com/Derbyneon/ddos-detection-ai.git
 cd ddos-detection-ai
 
 # Installer les dépendances Python
@@ -231,42 +231,12 @@ Les contributions sont les bienvenues ! Merci de :
 4. **Push** sur la branche (`git push origin feature/nouvelle-fonctionnalite`)
 5. **Créer** une Pull Request
 
-## 📄 Licence
 
-Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
 
 ## 👨‍💻 Auteur
 
-**Votre Nom**
-- GitHub: [@votre-username](https://github.com/votre-username)
-- Email: votre.email@example.com
-- LinkedIn: [Votre Profil](https://linkedin.com/in/votre-profil)
+**Derbyneon**
+- GitHub: [@Derbyneon](https://github.com/Derbyneon)
+- Email: jacobwilson20xy@gmail.com
+- LinkedIn: [Jacob](https://www.linkedin.com/in/sewah-akouete-jacob-wilson/)
 
-## 🙏 Remerciements
-
-- **Scapy** pour la capture de paquets réseau
-- **Scikit-learn** pour les outils d'apprentissage automatique  
-- **Flask** pour l'interface web
-- **Chart.js** pour les visualisations
-- **Communauté Open Source** pour les outils et bibliothèques
-
-## 📸 Captures d'Écran
-
-### 🖥️ Dashboard Principal
-![Dashboard](screenshots/dashboard.png)
-
-### 📊 Graphiques Temps Réel
-![Graphiques](screenshots/charts.png)
-
-### 🚫 Gestion des Blocages
-![Blocages](screenshots/blocked_ips.png)
-
----
-
-**⭐ Si ce projet vous a été utile, n'hésitez pas à lui donner une étoile !**
-
-**🔗 Liens Utiles :**
-- [Documentation complète](docs/)
-- [Guide d'installation détaillé](docs/installation.md)
-- [FAQ](docs/faq.md)
-- [Rapport de bugs](https://github.com/votre-username/ddos-detection-ai/issues)
