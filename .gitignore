@@ -1,0 +1,207 @@
+# ============================================
+# SYSTÈME DE DÉTECTION DDoS - .gitignore
+# ============================================
+
+# ============================================
+# PYTHON
+# ============================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ============================================
+# ENVIRONNEMENTS VIRTUELS
+# ============================================
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.env
+.venv
+
+# ============================================
+# JUPYTER NOTEBOOKS
+# ============================================
+.ipynb_checkpoints
+*.ipynb
+
+# ============================================
+# MODÈLES MACHINE LEARNING
+# ============================================
+models/*.pkl
+models/*.joblib
+models/*.h5
+models/*.model
+models/saved_models/
+models/checkpoints/
+
+# Garder le dossier models mais pas les fichiers
+models/*
+!models/*.py
+!models/__init__.py
+!models/README.md
+
+# ============================================
+# DONNÉES ET LOGS
+# ============================================
+data/logs/*.log
+data/logs/*.txt
+data/logs/*.json
+data/training_data/*.csv
+data/training_data/*.json
+data/captured_data/
+data/raw_data/
+*.pcap
+*.pcapng
+
+# Garder la structure des dossiers
+data/logs/*
+!data/logs/.gitkeep
+data/training_data/*
+!data/training_data/.gitkeep
+
+# ============================================
+# CONFIGURATION ET SECRETS
+# ============================================
+config/secrets.json
+config/api_keys.txt
+.env.local
+.env.production
+config.ini
+settings.conf
+
+# ============================================
+# SYSTÈME ET ÉDITEURS
+# ============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# VS Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# PyCharm
+.idea/
+*.swp
+*.swo
+*~
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# ============================================
+# DOCUMENTATION GÉNÉRÉE
+# ============================================
+docs/_build/
+docs/build/
+site/
+
+# ============================================
+# TESTS ET COUVERTURE
+# ============================================
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+
+# ============================================
+# FICHIERS TEMPORAIRES
+# ============================================
+*.tmp
+*.temp
+*.bak
+*.backup
+*.orig
+tmp/
+temp/
+
+# ============================================
+# CAPTURES RÉSEAU ET ANALYSES
+# ============================================
+captures/
+network_dumps/
+traffic_analysis/
+*.cap
+
+# ============================================
+# STATISTIQUES ET RAPPORTS
+# ============================================
+reports/generated/
+statistics/
+performance_logs/
+benchmark_results/
+
+# ============================================
+# SAUVEGARDES SYSTÈME
+# ============================================
+backup/
+archives/
+*.tar.gz
+*.zip
+*.rar
+
+# ============================================
+# SPÉCIFIQUE AU PROJET
+# ============================================
+
+# Fichiers de cache de l'interface web
+web_interface/static/cache/
+web_interface/uploads/
+
+# Sessions Flask
+flask_session/
+instance/
+
+# Logs spécifiques au projet
+ddos_detection.log
+system_events.log
+attack_history.json
+blocked_ips.json
+
+# Fichiers de configuration local
+local_config.py
+debug_settings.py
+
+# Captures de test
+test_captures/
+simulation_data/
+
+# ============================================
+# README POUR DOSSIERS VIDES
+# ============================================
+# Fichiers à garder pour préserver la structure
+!.gitkeep
+!README.md
+!**/README.md

@@ -1,0 +1,66 @@
+# Système de Détection DDoS avec IA
+# Python 3.8+ requis
+
+# ============================================
+# MACHINE LEARNING & DATA SCIENCE
+# ============================================
+scikit-learn>=1.0.0          # Random Forest et outils ML
+pandas>=1.3.0                # Manipulation de données
+numpy>=1.21.0                # Calculs numériques et matrices
+joblib>=1.1.0                # Sérialisation des modèles ML
+matplotlib>=3.5.0            # Visualisations (optionnel)
+seaborn>=0.11.0              # Visualisations statistiques (optionnel)
+
+# ============================================
+# RÉSEAU ET SÉCURITÉ
+# ============================================
+scapy>=2.4.5                 # Capture et analyse de paquets réseau
+psutil>=5.8.0                # Informations système et réseau
+netifaces>=0.11.0            # Interfaces réseau (optionnel)
+
+# ============================================
+# INTERFACE WEB ET VISUALISATION
+# ============================================
+Flask>=2.0.0                 # Framework web pour dashboard
+Jinja2>=3.0.0                # Moteur de templates Flask
+Werkzeug>=2.0.0              # Utilitaires WSGI pour Flask
+
+# ============================================
+# UTILITAIRES SYSTÈME
+# ============================================
+colorama>=0.4.4              # Couleurs dans le terminal
+python-dateutil>=2.8.2       # Manipulation avancée des dates
+pytz>=2021.3                 # Fuseaux horaires
+
+# ============================================
+# DÉVELOPPEMENT ET DEBUGGING (optionnel)
+# ============================================
+pytest>=6.2.0               # Framework de tests (dev)
+black>=21.0.0                # Formatage de code (dev)
+flake8>=4.0.0                # Linting (dev)
+
+# ============================================
+# NOTES D'INSTALLATION
+# ============================================
+
+# Ubuntu/Debian - Dépendances système requises :
+# sudo apt update
+# sudo apt install python3-dev libpcap-dev build-essential
+
+# CentOS/RHEL - Dépendances système requises :
+# sudo yum install python3-devel libpcap-devel gcc
+
+# Installation complète :
+# pip3 install -r requirements.txt
+
+# Installation minimale (sans dev tools) :
+# pip3 install scikit-learn pandas numpy scapy psutil flask joblib
+
+# PRIVILÈGES REQUIS :
+# - Mode simulation : Aucun privilège spécial
+# - Mode réseau réel : sudo requis pour capture de paquets et iptables
+
+# COMPATIBILITÉ :
+# - Linux : Support complet ✅
+# - Windows : Mode simulation uniquement ⚠️
+# - macOS : Support partiel (pas de mitigation) ⚠️
